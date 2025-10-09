@@ -1,15 +1,15 @@
 Config = {}
 
--- Framework detection (auto-detects QBCore or ESX)
-Config.Framework = 'auto' -- 'auto', 'qbcore', or 'esx'
+-- Framework-Erkennung (erkennt automatisch QBCore oder ESX)
+Config.Framework = 'auto' -- 'auto', 'qbcore', oder 'esx'
 
 -- IntraRP Link
-Config.IntraURL = 'CHANGE_ME' -- URL mit Direkt-Link zum eNOTF-Protokoll einfügen (z.B. https://test.de/enotf/)
+Config.IntraURL = '' -- URL mit Direkt-Link zum eNOTF-Protokoll einfügen (z.B. https://deine-url.de/enotf/)
 
 -- Debug mode
-Config.Debug = false  -- Enable this to test
+Config.Debug = false
 
--- Allowed jobs for Tablet access
+-- Zulässige Jobs für Tablet-Zugriff
 Config.AllowedJobs = {
     'police',
     'ambulance',
@@ -17,13 +17,19 @@ Config.AllowedJobs = {
     'admin'
 }
 
-
 Config.RequireItem = true
 Config.RequiredItem = "tablet"
 
--- Key to open tablet
-Config.OpenKey = 'F9'  -- You can change this to any key from the list below
+-- Taste zum Öffnen des Tablets
+Config.OpenKey = 'F9'  -- Sie können dies in eine beliebige Taste aus der folgenden Liste ändern.
 
+-- EmergencyDispatch Sync Einstellungen
+Config.EMDSync = {
+    Enabled = false,  -- Auf true setzen, um die EMD-Synchronisierung zu aktivieren.
+    PHPEndpoint = '',  -- URL mit Direkt-Link zum EMD-Sync einfügen (z.B. https://deine-url.de/api/emd-sync.php)
+    APIKey = 'CHANGE_ME',  -- Setze hier den API-Key deines intraRP (du findest diesen unter /assets/config/config.php)
+    SyncInterval = 30000  -- Synchronisations-Intervall (Standard: 30000 = 30 Sekunden)
+}
 
 -- Animation settings
 Config.Animation = {
@@ -35,7 +41,7 @@ Config.Animation = {
 -- Prop settings
 Config.UseProp = true
 
-Config.Prop = {                                        -- if you want to use the NidaPad Prop:                 (get the Prop here: https://intrarp.tebex.io/package/6879175) 
+Config.Prop = {                                        -- Wenn du den NIDA-Prop benutzen willst:       (Prop herunterladen: https://intrarp.tebex.io/package/6879175) 
     model = "prop_cs_tablet",                          -- model = "nidapad",
     bone = 60309,                                      -- bone = 18905,
     offset = {
@@ -49,10 +55,9 @@ Config.Prop = {                                        -- if you want to use the
 }
 
 
---[[ DO NOT TOUCH ANYTHING BELOW THIS LINE OR YOU WILL BREAK THE SCRIPT ]]--
+--[[ DO NOT TOUCH ANYTHING BELOW THIS LINE OR YOU WILL BREAK THE SCRIPT // KEINE ÄNDERUNGEN UNTERHALB DIESER ZEILE VORNEHMEN, DA SONST DAS SKRIPT BESCHÄDIGT WIRD ]]--
 
 
--- Complete key mapping for ALL keys
 Config.KeyControls = {
     -- Function Keys
     ['F1'] = 288,
@@ -68,7 +73,7 @@ Config.KeyControls = {
     ['F11'] = 344,
     ['F12'] = 199,
     
-    -- Number Keys (Top Row)
+    -- Number Keys
     ['1'] = 157,
     ['2'] = 158,
     ['3'] = 160,

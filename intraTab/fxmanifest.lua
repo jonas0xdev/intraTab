@@ -5,7 +5,7 @@ game 'gta5'
 name 'intraTab'
 description 'IntraRP FiveM Tablet Integration'
 author 'intraRP & NoName.cs <kontakt@intrarp.de>'
-version '1.1.0'
+version '1.2.0'
 
 shared_scripts {
     'config.lua'
@@ -16,7 +16,8 @@ client_scripts {
 }
 
 server_scripts {
-    'server/main.lua'
+    'server/main.lua',
+    'server/emd_sync.lua'
 }
 
 ui_page 'html/index.html'

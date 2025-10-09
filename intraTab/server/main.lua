@@ -62,15 +62,15 @@ if FrameworkName == 'qbcore' then
             local characterData = GetCharacterData(Player)
             
             if Config.Debug then
-                print("Server sending character data:", json.encode(characterData))
+                print("Server sendet Charakterdaten:", json.encode(characterData))
             end
             
             cb(characterData)
         else
             if Config.Debug then
-                print("No player data found for source:", src)
+                print("Keine Spielerdaten für Quelle gefunden:", src)
             end
-            cb({error = "No player data found"})
+            cb({error = "Keine Spielerdaten gefunden"})
         end
     end)
 elseif FrameworkName == 'esx' then
@@ -82,15 +82,15 @@ elseif FrameworkName == 'esx' then
             local characterData = GetCharacterData(Player)
             
             if Config.Debug then
-                print("Server sending character data:", json.encode(characterData))
+                print("Server sendet Charakterdaten:", json.encode(characterData))
             end
             
             cb(characterData)
         else
             if Config.Debug then
-                print("No player data found for source:", src)
+                print("Keine Spielerdaten für Quelle gefunden:", src)
             end
-            cb({error = "No player data found"})
+            cb({error = "Keine Spielerdaten gefunden"})
         end
     end)
 end
@@ -144,19 +144,19 @@ AddEventHandler('intrarp-tablet:getCharacterDataFromDB', function()
                     
                     if characterData then
                         if Config.Debug then
-                            print("Got character data from database:", json.encode(characterData))
+                            print("Charakterdaten aus Datenbank abgerufen:", json.encode(characterData))
                         end
                         
                         TriggerClientEvent('intrarp-tablet:receiveCharacterData', src, characterData)
                     else
-                        TriggerClientEvent('intrarp-tablet:receiveCharacterData', src, {error = "Invalid character data"})
+                        TriggerClientEvent('intrarp-tablet:receiveCharacterData', src, {error = "Ungültige Charakterdaten"})
                     end
                 else
-                    TriggerClientEvent('intrarp-tablet:receiveCharacterData', src, {error = "Character not found in database"})
+                    TriggerClientEvent('intrarp-tablet:receiveCharacterData', src, {error = "Charakter nicht in der Datenbank gefunden"})
                 end
             end)
         else
-            TriggerClientEvent('intrarp-tablet:receiveCharacterData', src, {error = "Framework not supported"})
+            TriggerClientEvent('intrarp-tablet:receiveCharacterData', src, {error = "Framework wird nicht unterstützt"})
         end
     end
 end)
@@ -175,8 +175,8 @@ end)
 
 -- Debug info
 if Config.Debug then
-    print("^2[IntraRP-tablet V2]^7 Framework detected: " .. (FrameworkName or "None"))
+    print("^2[intraTab]^7 Framework erkannt: " .. (FrameworkName or "None"))
     if not Framework then
-        print("^1[IntraRP-tablet V2]^7 ERROR: No supported framework found!")
+        print("^1[intraTab]^7 FEHLER: Kein unterstütztes Framework gefunden!")
     end
 end
