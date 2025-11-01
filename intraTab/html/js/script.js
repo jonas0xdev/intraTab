@@ -5,10 +5,8 @@ let navigationHistory = [];
 let historyIndex = -1;
 let currentUrl = "";
 
-// Listen for messages from FiveM
 window.addEventListener("message", function (event) {
   const data = event.data;
-  //console.log('Received message:', data);
 
   switch (data.type) {
     case "openTablet":
@@ -26,8 +24,6 @@ window.addEventListener("message", function (event) {
 });
 
 function openTablet(charData, url) {
-  //console.log('Opening tablet with data:', charData);
-
   characterData = charData;
   isTabletOpen = true;
 
@@ -44,10 +40,18 @@ function openTablet(charData, url) {
     document.body.style.cursor = "default";
     tabletContainer.style.cursor = "default";
   }
+
+  if (tabletScreen && tabletScreen.src && tabletScreen.src !== "") {
+    console.log("Restoring tablet with existing content");
+    if (loadingScreen) loadingScreen.style.display = "none";
+    tabletScreen.style.display = "block";
+    updateNavigationButtons();
+    return;
+  }
+
   if (loadingScreen) loadingScreen.style.display = "flex";
   if (tabletScreen) tabletScreen.style.display = "none";
 
-  // Reset navigation
   navigationHistory = [];
   historyIndex = -1;
   currentUrl = "";
@@ -93,8 +97,6 @@ function setCharacterData(charData) {
 }
 
 function loadIntraSystem(charData) {
-  //console.log('Loading system for:', charData.firstName, charData.lastName);
-
   const loadingText = document.getElementById("loadingText");
   if (loadingText) {
     loadingText.textContent =
@@ -108,9 +110,6 @@ function loadIntraSystem(charData) {
   const characterName = charData.firstName + " " + charData.lastName;
   const url = IntraURL + "?charactername=" + encodeURIComponent(characterName);
 
-  //console.log('Loading URL:', url);
-
-  // Add to navigation history
   addToHistory(url);
   currentUrl = url;
   updatePageTitle("IntraRP Verwaltungsportal");
@@ -134,15 +133,10 @@ function closeTablet() {
 
   isTabletOpen = false;
   const tabletContainer = document.getElementById("tabletContainer");
-  const tabletScreen = document.getElementById("tabletScreen");
 
   if (tabletContainer) {
     tabletContainer.style.display = "none";
     document.body.style.cursor = "default";
-  }
-  if (tabletScreen) {
-    tabletScreen.src = "";
-    tabletScreen.style.display = "none";
   }
 
   fetch(`https://${GetParentResourceName()}/closeTablet`, {
@@ -156,7 +150,6 @@ function closeTablet() {
   });
 }
 
-// Navigation functions
 function addToHistory(url) {
   if (historyIndex < navigationHistory.length - 1) {
     navigationHistory = navigationHistory.slice(0, historyIndex + 1);
@@ -280,7 +273,6 @@ function refreshPage() {
   console.log("Refreshed page:", currentUrl);
 }
 
-// Handle ESC key
 function handleEscapeKey(event) {
   if (event.key === "Escape" && isTabletOpen) {
     event.preventDefault();
@@ -290,7 +282,6 @@ function handleEscapeKey(event) {
   }
 }
 
-// Add event listeners when DOM is ready
 function addEventListeners() {
   document.addEventListener("keydown", handleEscapeKey, true);
   document.addEventListener(
