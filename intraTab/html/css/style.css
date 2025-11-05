@@ -263,7 +263,7 @@ body {
     flex: 1;
     width: 100%;
     border: none;
-    border-radius: 0 0 17px 17px;
+    border-radius: 0;
     display: none;
     cursor: default;
     background: #fff;
