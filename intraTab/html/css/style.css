@@ -25,8 +25,8 @@ body {
 
 .holder-left {
     position: absolute;
-    left: -12px;
-    top: -104px;
+    left: -24px;
+    top: -114px;
     width: 160px;
     height: 90px;
     background: rgba(255, 255, 255, 0.1);
@@ -41,7 +41,7 @@ body {
 .holder-left::after {
     content: '';
     position: absolute;
-    bottom: -14px;
+    bottom: -7px;
     left: 0;
     width: 10px;
     height: 20px;
@@ -56,7 +56,7 @@ body {
 .holder-span {
     position: absolute;
     right: 16px;
-    top: -104px;
+    top: -114px;
     width: 100%;
     max-width: 1400px;
     height: 60px;
@@ -69,8 +69,8 @@ body {
 
 .holder-right {
     position: absolute;
-    right: -12px;
-    top: -104px;
+    right: -24px;
+    top: -114px;
     width: 160px;
     height: 90px;
     background: rgba(255, 255, 255, 0.1);
@@ -85,7 +85,7 @@ body {
 .holder-right::after {
     content: '';
     position: absolute;
-    bottom: -14px;
+    bottom: -7px;
     right: 0;
     width: 10px;
     height: 20px;
@@ -104,11 +104,10 @@ body {
     max-height: 750px;
     background: #1a1a1a;
     border-radius: 20px;
-    border: 14px solid #333;
-    outline: 8px solid #c70017;
+    border: 28px solid #333;
+    box-shadow: 8px 0 0 #c70017, -8px 0 0 #c70017, 0 8px 0 #c70017, 0 10px 30px rgba(0, 0, 0, 0.5);
     position: relative;
     /* overflow: hidden; */
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     display: flex;
     flex-direction: column;
 }
@@ -281,7 +280,7 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    border-radius: 0 0 17px 17px;
+    border-radius: 0;
     cursor: default;
     z-index: 10;
 }
