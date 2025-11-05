@@ -1,14 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IntraRP Tablet</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
     <div class="tablet-container" id="tabletContainer">
         <div class="tablet-frame">
+            <div class="holder-left"></div>
+            <div class="holder-span"></div>
+            <div class="holder-right"></div>
             <!-- Navigation Header -->
             <div class="tablet-header">
                 <div class="tablet-nav">
@@ -16,19 +21,19 @@
                         <span class="icon">🏠</span>
                     </button>
                 </div>
-                
+
                 <div class="tablet-title" id="pageTitle">IntraRP Verwaltungsportal</div>
-                
-                <button class="close-btn" onclick="closeTablet()" title="Close (ESC)">×</button>
+
+                <button class="close-btn" onclick="closeTablet()" title="Tablet schließen (ESC)">×</button>
             </div>
-            
+
             <!-- Loading Screen -->
             <div class="loading-screen" id="loadingScreen">
                 <div class="loading-spinner"></div>
-                <h3>Lade IntraRP...</h3>
-                <p id="loadingText">Verbindung wird hergestellt...</p>
+                <h3>Lade eNOTF...</h3>
+                <p id="loadingText">Verbindung zum Server wird hergestellt...</p>
             </div>
-            
+
             <!-- Main Content -->
             <iframe class="tablet-screen" id="tabletScreen"></iframe>
         </div>
@@ -36,4 +41,5 @@
 
     <script src="js/script.js"></script>
 </body>
+
 </html>
