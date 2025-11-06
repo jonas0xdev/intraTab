@@ -31,8 +31,8 @@ body {
     height: 90px;
     background: rgba(255, 255, 255, 0.1);
     border-radius: 0;
-    /* background-color: #c70017; */
-    background: linear-gradient(to bottom, #ff5a5c 0%, #c70017 15px);
+    /* background-color: #0E34A0; */
+    background: linear-gradient(to bottom, #1e54eb 0%, #0E34A0 15px);
     z-index: 15;
     transform: skewX(-10deg);
     border-radius: 16px 0 0 0;
@@ -47,7 +47,7 @@ body {
     height: 20px;
     background: rgba(255, 255, 255, 0.1);
     border-radius: 0;
-    background-color: #c70017;
+    background-color: #0E34A0;
     z-index: 15;
     transform: skewX(4deg);
     border-radius: 0 0 50% 0;
@@ -62,8 +62,8 @@ body {
     height: 60px;
     background: rgba(255, 255, 255, 0.1);
     border-radius: 0;
-    /* background-color: #c70017; */
-    background: linear-gradient(to bottom, #ff5a5c 0%, #c70017 15px, #c70017 50%, #990013 60%);
+    /* background-color: #0E34A0; */
+    background: linear-gradient(to bottom, #1e54eb 0%, #0E34A0 15px, #0E34A0 50%, #0a2570 60%);
     z-index: 14;
 }
 
@@ -75,8 +75,8 @@ body {
     height: 90px;
     background: rgba(255, 255, 255, 0.1);
     border-radius: 0;
-    /* background-color: #c70017; */
-    background: linear-gradient(to bottom, #ff5a5c 0%, #c70017 15px);
+    /* background-color: #0E34A0; */
+    background: linear-gradient(to bottom, #1e54eb 0%, #0E34A0 15px);
     z-index: 15;
     transform: skewX(10deg);
     border-radius: 0 16px 0 0;
@@ -91,7 +91,7 @@ body {
     height: 20px;
     background: rgba(255, 255, 255, 0.1);
     border-radius: 0;
-    background-color: #c70017;
+    background-color: #0E34A0;
     z-index: 15;
     transform: skewX(-4deg);
     border-radius: 0 0 0 50%;
@@ -105,7 +105,7 @@ body {
     background: #1a1a1a;
     border-radius: 20px;
     border: 28px solid #333;
-    box-shadow: 8px 0 0 #c70017, -8px 0 0 #c70017, 0 8px 0 #c70017, 0 10px 30px rgba(0, 0, 0, 0.5);
+    box-shadow: 8px 0 0 #0E34A0, -8px 0 0 #0E34A0, 0 8px 0 #0E34A0, 0 10px 30px rgba(0, 0, 0, 0.5);
     position: relative;
     /* overflow: hidden; */
     display: flex;
