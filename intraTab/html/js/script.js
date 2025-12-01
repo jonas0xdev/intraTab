@@ -50,10 +50,11 @@ function openTablet(charData, url) {
 
   // Check if we can restore existing content (src must be a valid URL, not empty or about:blank)
   const existingSrc = tabletScreen ? tabletScreen.src : "";
+  const nuiPageUrl = window.location.href;
   const hasValidContent = existingSrc && 
                           existingSrc !== "" && 
                           existingSrc !== "about:blank" && 
-                          !existingSrc.endsWith("/index.html");
+                          existingSrc !== nuiPageUrl;
   
   if (tabletScreen && hasValidContent) {
     console.log("Restoring tablet with existing content:", existingSrc);

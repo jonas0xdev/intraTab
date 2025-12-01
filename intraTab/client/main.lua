@@ -336,7 +336,8 @@ RegisterNUICallback('closeTablet', function(data, cb)
     cb('ok')
 end)
 
--- Key detection thread for ESC handling and animation maintenance
+-- ESC key handler and animation maintenance thread
+-- Note: F9 key binding is handled by RegisterKeyMapping below, not by this thread
 CreateThread(function()
     if Config.Debug then
         print("Monitoring ESC key for tablet close")
