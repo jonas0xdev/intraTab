@@ -42,7 +42,7 @@ Config.Animation = {
 Config.UseProp = true
 
 Config.Prop = {
-    model = "notfpad",
+    model = "nidapad",
     bone = 18905,
     offset = {
         x = 0.1240,

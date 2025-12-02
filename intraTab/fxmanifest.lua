@@ -25,8 +25,7 @@ ui_page 'html/index.html'
 files {
     'html/index.html',
     'html/css/style.css',
-    'html/js/script.js',
-    'stream/notfpad.ytyp'
+    'html/js/script.js'
 }
 
-data_file 'DLC_ITYP_REQUEST' 'stream/notfpad.ytyp'
+data_file 'DLC_ITYP_REQUEST' 'stream/nidapad.ytyp'
