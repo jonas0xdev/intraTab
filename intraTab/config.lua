@@ -28,7 +28,21 @@ Config.EMDSync = {
     Enabled = false,  -- Auf true setzen, um die EMD-Synchronisierung zu aktivieren.
     PHPEndpoint = '',  -- URL mit Direkt-Link zum EMD-Sync einfügen (z.B. https://deine-url.de/api/emd-sync.php)
     APIKey = 'CHANGE_ME',  -- Setze hier den API-Key deines intraRP (du findest diesen unter /assets/config/config.php)
-    SyncInterval = 30000  -- Synchronisations-Intervall (Standard: 30000 = 30 Sekunden)
+    SyncInterval = 30000,  -- Synchronisations-Intervall (Standard: 30000 = 30 Sekunden)
+    
+    -- Dispatch Log Sync Einstellungen (für Einsatz-Statusmeldungen)
+    DispatchLogSync = {
+        Enabled = false,  -- Auf true setzen, um die Dispatch-Log-Synchronisierung zu aktivieren
+        CheckInterval = 60000,  -- Intervall zur Prüfung auf abgeschlossene Einsätze (Standard: 60000 = 60 Sekunden)
+        SourceTable = 'emd_dispatchlog'  -- Tabelle mit den Dispatch-Logs (nutzt die vorhandene Framework-Datenbankverbindung)
+    },
+    
+    -- Echtzeit Status-Synchronisierung
+    StatusSync = {
+        Enabled = false,  -- Auf true setzen, um die Echtzeit-Status-Synchronisierung zu aktivieren
+        SyncStatuses = {'C', '1', '2', '3', '4', '7', '8'},  -- Zu synchronisierende Status (C = Alarmierung, 1-8 = weitere Status)
+        PollInterval = 5000  -- Polling-Intervall in Millisekunden (Standard: 5000 = 5 Sekunden)
+    }
 }
 
 -- Animation settings
