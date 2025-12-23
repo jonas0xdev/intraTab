@@ -57,6 +57,7 @@ function updateTruppDisplay(truppNum) {
     const timer = truppTimers[truppNum];
     const timeElement = document.getElementById(`trupp${truppNum}Time`);
     const progressBar = document.getElementById(`trupp${truppNum}Progress`);
+    const clockHand = document.getElementById(`trupp${truppNum}Hand`);
     
     if (timeElement) {
         timeElement.textContent = formatTime(timer.elapsedSeconds);
@@ -73,6 +74,12 @@ function updateTruppDisplay(truppNum) {
     if (progressBar) {
         const percentage = (timer.elapsedSeconds / MAX_TIME_SECONDS) * 100;
         progressBar.style.width = Math.min(percentage, 100) + '%';
+    }
+    
+    // Update analog clock hand rotation (360 degrees for 60 minutes)
+    if (clockHand) {
+        const degrees = (timer.elapsedSeconds / MAX_TIME_SECONDS) * 360;
+        clockHand.style.transform = `translate(-50%, -100%) rotate(${degrees}deg)`;
     }
 }
 

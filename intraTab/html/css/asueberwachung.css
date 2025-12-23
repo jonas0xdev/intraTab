@@ -30,8 +30,8 @@ body {
     max-height: 900px;
     background: #1a1a1a;
     border-radius: 20px;
-    border: 4px solid #ff6600;
-    box-shadow: 0 0 40px rgba(255, 102, 0, 0.3);
+    border: 4px solid #dc3545;
+    box-shadow: 0 0 40px rgba(220, 53, 69, 0.3);
     position: relative;
     display: flex;
     flex-direction: column;
@@ -44,7 +44,7 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 15px 20px;
-    background: linear-gradient(135deg, #ff6600, #ff8833);
+    background: linear-gradient(135deg, #dc3545, #c82333);
     border-bottom: 2px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
@@ -94,13 +94,21 @@ body {
     background: #222;
 }
 
+/* Trupps Container - Horizontal Layout */
+.trupps-container {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
 /* Trupp Section */
 .trupp-section {
     background: #2a2a2a;
     border-radius: 12px;
-    margin-bottom: 20px;
     border: 2px solid #444;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    flex: 1;
+    min-width: 0; /* Allow flex items to shrink below content size */
 }
 
 .trupp-header {
@@ -114,7 +122,7 @@ body {
 }
 
 .trupp-header h2 {
-    color: #ff6600;
+    color: #dc3545;
     font-size: 20px;
     margin: 0;
 }
@@ -160,7 +168,7 @@ body {
     padding: 20px;
 }
 
-/* Eieruhr (Egg Timer) */
+/* Eieruhr (Egg Timer) - Analog Clock */
 .eieruhr-container {
     display: flex;
     justify-content: center;
@@ -169,20 +177,88 @@ body {
 
 .eieruhr {
     background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
-    border: 3px solid #ff6600;
+    border: 3px solid #dc3545;
     border-radius: 15px;
-    padding: 20px 40px;
+    padding: 20px;
     text-align: center;
-    box-shadow: 0 0 20px rgba(255, 102, 0, 0.3);
+    box-shadow: 0 0 20px rgba(220, 53, 69, 0.3);
     min-width: 200px;
 }
 
+/* Analog Clock */
+.analog-clock {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: #1a1a1a;
+    border: 4px solid #dc3545;
+    position: relative;
+    margin: 0 auto 10px;
+    box-shadow: 0 0 20px rgba(220, 53, 69, 0.3), inset 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+/* Clock center dot */
+.analog-clock::before {
+    content: '';
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: #dc3545;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    box-shadow: 0 0 10px rgba(220, 53, 69, 0.8);
+}
+
+/* Clock markers */
+.clock-marker {
+    position: absolute;
+    width: 2px;
+    height: 10px;
+    background: #666;
+    top: 5px;
+    left: 50%;
+    transform-origin: 50% 70px;
+    margin-left: -1px;
+}
+
+.clock-marker:nth-child(1) { transform: rotate(0deg) translateX(-50%); }
+.clock-marker:nth-child(2) { transform: rotate(30deg) translateX(-50%); }
+.clock-marker:nth-child(3) { transform: rotate(60deg) translateX(-50%); }
+.clock-marker:nth-child(4) { transform: rotate(90deg) translateX(-50%); }
+.clock-marker:nth-child(5) { transform: rotate(120deg) translateX(-50%); }
+.clock-marker:nth-child(6) { transform: rotate(150deg) translateX(-50%); }
+.clock-marker:nth-child(7) { transform: rotate(180deg) translateX(-50%); }
+.clock-marker:nth-child(8) { transform: rotate(210deg) translateX(-50%); }
+.clock-marker:nth-child(9) { transform: rotate(240deg) translateX(-50%); }
+.clock-marker:nth-child(10) { transform: rotate(270deg) translateX(-50%); }
+.clock-marker:nth-child(11) { transform: rotate(300deg) translateX(-50%); }
+.clock-marker:nth-child(12) { transform: rotate(330deg) translateX(-50%); }
+
+/* Clock hand (pointer) */
+.clock-hand {
+    position: absolute;
+    width: 4px;
+    height: 55px;
+    background: linear-gradient(to top, #dc3545, #ff6b6b);
+    top: 50%;
+    left: 50%;
+    transform-origin: 50% 100%;
+    transform: translate(-50%, -100%) rotate(0deg);
+    border-radius: 2px 2px 0 0;
+    box-shadow: 0 0 10px rgba(220, 53, 69, 0.6);
+    transition: transform 0.3s ease-out;
+}
+
+/* Digital time display below clock */
 .eieruhr-time {
-    font-size: 48px;
+    font-size: 24px;
     font-weight: bold;
-    color: #ff6600;
+    color: #dc3545;
     font-family: 'Courier New', monospace;
-    text-shadow: 0 0 10px rgba(255, 102, 0, 0.5);
+    text-shadow: 0 0 10px rgba(220, 53, 69, 0.5);
     margin-bottom: 5px;
 }
 
@@ -227,7 +303,7 @@ body {
 }
 
 .form-group label {
-    color: #ff6600;
+    color: #dc3545;
     font-size: 13px;
     margin-bottom: 5px;
     font-weight: 600;
@@ -249,8 +325,8 @@ body {
 .form-group select:focus,
 .form-group textarea:focus {
     outline: none;
-    border-color: #ff6600;
-    box-shadow: 0 0 8px rgba(255, 102, 0, 0.3);
+    border-color: #dc3545;
+    box-shadow: 0 0 8px rgba(220, 53, 69, 0.3);
 }
 
 .form-group input::placeholder,
@@ -273,7 +349,7 @@ body {
 }
 
 .mission-info h3 {
-    color: #ff6600;
+    color: #dc3545;
     font-size: 18px;
     margin-bottom: 15px;
 }
@@ -311,14 +387,14 @@ body {
 }
 
 .btn-send {
-    background: linear-gradient(135deg, #ff6600, #ff8833);
+    background: linear-gradient(135deg, #dc3545, #c82333);
     color: white;
 }
 
 .btn-send:hover {
-    background: linear-gradient(135deg, #ff8833, #ffaa66);
+    background: linear-gradient(135deg, #c82333, #a71d2a);
     transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(255, 102, 0, 0.4);
+    box-shadow: 0 6px 12px rgba(220, 53, 69, 0.4);
 }
 
 /* Scrollbar */
@@ -331,12 +407,12 @@ body {
 }
 
 .asu-content::-webkit-scrollbar-thumb {
-    background: #ff6600;
+    background: #dc3545;
     border-radius: 5px;
 }
 
 .asu-content::-webkit-scrollbar-thumb:hover {
-    background: #ff8833;
+    background: #c82333;
 }
 
 /* Warning States */
@@ -372,6 +448,14 @@ body {
 @media (max-width: 1400px) {
     .form-row {
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+    
+    .trupps-container {
+        flex-direction: column;
+    }
+    
+    .trupp-section {
+        flex: none;
     }
 }
 
