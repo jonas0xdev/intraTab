@@ -195,9 +195,8 @@ function getAllData() {
 
 // Clear all data
 function clearAll() {
-    if (!confirm('Möchten Sie wirklich das gesamte Protokoll leeren? Alle Daten gehen verloren!')) {
-        return;
-    }
+    // Skip confirmation dialog to avoid NUI freeze in FiveM
+    // User can undo by not saving/sending data
     
     // Stop all timers
     for (let i = 1; i <= 3; i++) {
