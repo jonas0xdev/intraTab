@@ -142,7 +142,8 @@ function OpenASU()
     -- Send open message to NUI
     SendNUIMessage({
         type = "openASU",
-        characterData = charData
+        characterData = charData,
+        syncEnabled = Config.ASUSync and Config.ASUSync.Enabled or false
     })
 end
 

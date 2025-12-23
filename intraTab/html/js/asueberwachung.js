@@ -28,7 +28,7 @@ window.addEventListener('message', function(event) {
     
     switch(data.type) {
         case 'openASU':
-            openASU(data.characterData);
+            openASU(data.characterData, data.syncEnabled);
             break;
         case 'closeASU':
             closeASU();
@@ -267,7 +267,7 @@ function sendData() {
 }
 
 // Open ASU interface
-function openASU(characterData) {
+function openASU(characterData, syncEnabled) {
     if (isASUOpen) {
         console.log('ASU already open');
         return;
@@ -281,12 +281,18 @@ function openASU(characterData) {
         document.body.style.cursor = 'default';
     }
     
+    // Show/hide send button based on sync config
+    const sendButton = document.querySelector('.btn-send');
+    if (sendButton) {
+        sendButton.style.display = syncEnabled ? 'inline-block' : 'none';
+    }
+    
     // Restore timer displays when reopening
     for (let i = 1; i <= 3; i++) {
         updateTruppDisplay(i);
     }
     
-    console.log('ASU opened', characterData);
+    console.log('ASU opened', characterData, 'Sync enabled:', syncEnabled);
 }
 
 // Close ASU interface
