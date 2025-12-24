@@ -1,5 +1,6 @@
-let isTabletOpen = false;
-let characterData = null;
+// Global state - managed by master.js
+// let isTabletOpen = false; // NOW MANAGED BY MASTER.JS
+// let characterData = null; // NOW MANAGED BY MASTER.JS
 let IntraURL = null;
 let navigationHistory = [];
 let historyIndex = -1;
@@ -60,7 +61,11 @@ window.addEventListener("message", function (event) {
 
   switch (data.type) {
     case "openTablet":
-      openTablet(data.characterData, data.IntraURL);
+      // Only handle eNOTF tablet here (index.html)
+      // FireTab is handled by firetab.html directly
+      if (data.tabletType === "eNOTF") {
+        openTablet(data.characterData, data.url);
+      }
       break;
 
     case "setCharacterData":
@@ -68,10 +73,23 @@ window.addEventListener("message", function (event) {
       break;
 
     case "closeTablet":
-      closeTablet();
+      // Only close eNOTF tablet here
+      if (!data.tabletType || data.tabletType === "eNOTF") {
+        console.log(
+          "[intraTab] closeTablet message received for:",
+          data.tabletType
+        );
+        closeTablet();
+      }
       break;
   }
 });
+
+function openFireTab(charData, url) {
+  console.log("[intraTab] Redirecting to FireTab with URL:", url);
+  // FireTab wird in einer separaten HTML-Datei gehandhabt
+  // Diese Funktion ist für zukünftige Integrationen gedacht
+}
 
 function openTablet(charData, url) {
   characterData = charData;
@@ -186,7 +204,14 @@ function loadIntraSystem(charData) {
 
   if (iframe) {
     console.log("[intraTab] Setting iframe.src to:", url);
-    iframe.src = url;
+
+    // Set onload handler BEFORE setting src
+    iframe.onload = () => {
+      console.log("[intraTab] Iframe loaded successfully");
+      if (loadingScreen) loadingScreen.style.display = "none";
+      iframe.style.display = "block";
+      updateNavigationButtons();
+    };
 
     // Überwache iframe src Änderungen (falls Website auf HTTP redirected)
     const checkIframeSrc = () => {
@@ -209,23 +234,34 @@ function loadIntraSystem(charData) {
     setTimeout(checkIframeSrc, 500);
     setTimeout(checkIframeSrc, 1500);
 
+    // Fallback: Verstecke loading screen nach 3 Sekunden falls onload nicht fired
     setTimeout(() => {
-      if (loadingScreen) loadingScreen.style.display = "none";
-      iframe.style.display = "block";
-      updateNavigationButtons();
-    }, 2000);
+      if (loadingScreen && loadingScreen.style.display !== "none") {
+        console.warn(
+          "[intraTab] Loading screen fallback timeout - hiding loading screen"
+        );
+        loadingScreen.style.display = "none";
+        iframe.style.display = "block";
+        updateNavigationButtons();
+      }
+    }, 3000);
+
+    // Set src AFTER handlers are registered
+    iframe.src = url;
   }
 }
 
 function closeTablet() {
-  console.log("Closing tablet");
+  console.log("[intraTab] Closing eNOTF tablet UI");
 
   isTabletOpen = false;
   const tabletContainer = document.getElementById("tabletContainer");
 
   if (tabletContainer) {
     tabletContainer.style.display = "none";
-    document.body.style.cursor = "default";
+    // Reset cursor explicitly
+    document.body.style.cursor = "none";
+    tabletContainer.style.cursor = "none";
   }
 
   fetch(`https://${GetParentResourceName()}/closeTablet`, {
@@ -362,28 +398,9 @@ function refreshPage() {
   console.log("Refreshed page:", currentUrl);
 }
 
-function handleEscapeKey(event) {
-  if (event.key === "Escape" && isTabletOpen) {
-    event.preventDefault();
-    event.stopPropagation();
-    closeTablet();
-    return false;
-  }
-}
-
 function addEventListeners() {
-  document.addEventListener("keydown", handleEscapeKey, true);
-  document.addEventListener(
-    "keyup",
-    function (e) {
-      if (e.key === "Escape" && isTabletOpen) {
-        e.preventDefault();
-        e.stopPropagation();
-        return false;
-      }
-    },
-    true
-  );
+  // ESC handling is managed by client Lua to avoid unintended DOM-triggered closes.
+  // This NUI only closes via explicit UI actions or server messages.
 
   document.addEventListener("contextmenu", function (e) {
     e.preventDefault();

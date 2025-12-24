@@ -75,7 +75,7 @@ end
 
 -- Check if player has required job
 local function HasAllowedJob()
-    if not Config.ASUJobs or #Config.ASUJobs == 0 then
+    if not Config.ASU or not Config.ASU.AllowedJobs or #Config.ASU.AllowedJobs == 0 then
         return true -- If no job restriction, allow all
     end
     
@@ -84,7 +84,7 @@ local function HasAllowedJob()
         return false
     end
     
-    for _, job in ipairs(Config.ASUJobs) do
+    for _, job in ipairs(Config.ASU.AllowedJobs) do
         if job == charData.job then
             return true
         end
@@ -96,7 +96,7 @@ end
 -- Open ASU interface
 function OpenASU()
     -- Check if ASU system is enabled
-    if not Config.ASUEnabled then
+    if not Config.ASU or not Config.ASU.Enabled then
         if Config.Debug then
             print("^3[ASU]^7 ASU system is disabled in config")
         end
@@ -274,7 +274,7 @@ AddEventHandler('onResourceStop', function(resourceName)
 end)
 
 if Config.Debug then
-    if Config.ASUEnabled then
+    if Config.ASU and Config.ASU.Enabled then
         print("^2[ASU]^7 Atemschutzüberwachung Client-System geladen")
     else
         print("^3[ASU]^7 Atemschutzüberwachung Client-System ist deaktiviert")

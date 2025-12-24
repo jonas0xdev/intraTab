@@ -3,35 +3,86 @@ Config = {}
 -- Framework-Erkennung (erkennt automatisch QBCore oder ESX)
 Config.Framework = 'auto' -- 'auto', 'qbcore', oder 'esx'
 
--- IntraRP Link
--- WICHTIG: FiveM benötigt HTTPS! Die URL wird automatisch auf HTTPS gesetzt.
--- Beispiel: https://deine-url.de/enotf/
-Config.IntraURL = '' -- URL mit Direkt-Link zum eNOTF-Protokoll einfügen
+-- ========================================
+-- ZENTRALE URL & API KONFIGURATION
+-- ========================================
+-- Basis-URL deiner intraRP Installation
+-- Beispiele:
+--   https://deine-url.de/
+--   https://deine-url.de/intrarp/
+Config.BaseURL = 'https://deine-url.de/'  -- Mit trailing slash!
+
+-- Zentral definierter API-Key (für alle Systeme)
+Config.APIKey = 'CHANGE_ME'  -- Setze hier deinen API-Key
 
 -- Debug mode
 Config.Debug = false
 
--- Zulässige Jobs für Tablet-Zugriff
-Config.AllowedJobs = {
-    'police',
-    'ambulance',
-    'firedepartment',
-    'admin'
+-- ========================================
+-- ENOTF-TABLET KONFIGURATION
+-- ========================================
+Config.eNOTF = {
+    Enabled = true,
+    Command = 'enotf',
+    OpenKey = 'F9',  -- Taste zum Öffnen (eNOTF-spezifisch)
+    AllowedJobs = {
+        'police',
+        'ambulance',
+        'admin'
+    },
+    RequireItem = false,
+    RequiredItem = "tablet",
+    UseProp = true,
+    Prop = {
+        model = "notfpad",
+        bone = 18905,
+        offset = {
+            x = 0.1240,
+            y = 0.0550,
+            z = 0.1550,
+            xRot = -76.0,
+            yRot = -186.0,
+            zRot = 58.3
+        }
+    }
 }
 
-Config.RequireItem = true
-Config.RequiredItem = "tablet"
+-- ========================================
+-- FIRETAB-TABLET KONFIGURATION
+-- ========================================
+Config.FireTab = {
+    Enabled = true,
+    Command = 'firetab',
+    OpenKey = nil,  -- Optional: Separate Taste, oder nil für keine
+    AllowedJobs = {
+        'firedepartment',
+        'admin'
+    },
+    RequireItem = false,
+    RequiredItem = "tablet",
+    UseProp = true,
+    Prop = {
+        model = "prop_cs_tablet",
+        bone = 60309,
+        offset = {
+            x = 0.03,
+            y = 0.002,
+            z = -0.0,
+            xRot = 10.0,
+            yRot = 160.0,
+            zRot = 0.0
+        }
+    }
+}
 
--- Taste zum Öffnen des Tablets
-Config.OpenKey = 'F9'  -- Sie können dies in eine beliebige Taste aus der folgenden Liste ändern.
-
--- EmergencyDispatch Sync Einstellungen
+-- ========================================
+-- EMD-SYNCHRONISIERUNG EINSTELLUNGEN
+-- ========================================
 Config.EMDSync = {
-    Enabled = false,  -- Auf true setzen, um die EMD-Synchronisierung zu aktivieren.
-    -- WICHTIG: FiveM benötigt HTTPS! Die URL wird automatisch auf HTTPS gesetzt.
-    PHPEndpoint = '',  -- URL mit Direkt-Link zum EMD-Sync einfügen (z.B. https://deine-url.de/api/emd-sync.php)
-    APIKey = 'CHANGE_ME',  -- Setze hier den API-Key deines intraRP (du findest diesen unter /assets/config/config.php)
+    Enabled = false,  -- Auf true setzen, um die EMD-Synchronisierung zu aktivieren
     SyncInterval = 30000,  -- Synchronisations-Intervall (Standard: 30000 = 30 Sekunden)
+    PHPEndpoint = Config.BaseURL .. 'api/emd-sync.php',  -- Wird automatisch aus BaseURL generiert
+    APIKey = Config.APIKey,  -- Nutzt den zentralen API-Key
     
     -- Dispatch Log Sync Einstellungen (für Einsatz-Statusmeldungen)
     DispatchLogSync = {
@@ -48,45 +99,49 @@ Config.EMDSync = {
     }
 }
 
--- Animation settings
-Config.Animation = {
-    dict = "amb@world_human_seat_wall_tablet@female@base",
-    anim = "base",
-    flag = 49
-}
-
--- Prop settings
-Config.UseProp = true
-
-Config.Prop = {
-    model = "notfpad",
-    bone = 18905,
-    offset = {
-        x = 0.1240,
-        y = 0.0550,
-        z = 0.1550,
-        xRot = -76.0,
-        yRot = -186.0,
-        zRot = 58.3
+-- ========================================
+-- ATEMSCHUTZÜBERWACHUNG (ASU) EINSTELLUNGEN
+-- ========================================
+Config.ASU = {
+    Enabled = true,  -- Auf false setzen, um das gesamte ASU-System zu deaktivieren
+    AllowedJobs = {
+        'police',
+        'ambulance',
+        'firedepartment',
+        'admin'
+    },
+    UseProp = true,
+    Prop = {
+        model = "prop_cs_tablet",
+        bone = 60309,
+        offset = {
+            x = 0.03,
+            y = 0.002,
+            z = -0.0,
+            xRot = 10.0,
+            yRot = 160.0,
+            zRot = 0.0
+        }
     }
 }
 
--- Atemschutzüberwachung (ASU) Settings
-Config.ASUEnabled = true  -- Auf false setzen, um das gesamte ASU-System zu deaktivieren
-
-Config.ASUJobs = {
-    'police',
-    'ambulance',
-    'firedepartment',
-    'admin'
-}
-
--- ASU Sync Einstellungen (für API-Übertragung der Protokolle)
+-- ========================================
+-- ASU SYNC EINSTELLUNGEN
+-- ========================================
 Config.ASUSync = {
     Enabled = false,  -- Auf true setzen, um die ASU-Synchronisierung zu aktivieren
-    -- WICHTIG: FiveM benötigt HTTPS! Die URL wird automatisch auf HTTPS gesetzt.
-    APIEndpoint = ''  -- URL mit Direkt-Link zum ASU-Sync API-Endpunkt (z.B. https://deine-url.de/api/asu-sync.php)
-    -- Hinweis: Der API-Key wird von Config.EMDSync.APIKey übernommen
+    SyncInterval = 30000,  -- Synchronisations-Intervall (Standard: 30000 = 30 Sekunden)
+    PHPEndpoint = Config.BaseURL .. 'api/asu-sync.php',  -- Wird automatisch aus BaseURL generiert
+    APIKey = Config.APIKey  -- Nutzt den zentralen API-Key
+}
+
+-- ========================================
+-- TABLET ANIMATION EINSTELLUNGEN
+-- ========================================
+Config.Animation = {
+    dict = "amb@world_human_seat_wall_tablet@female@base",
+    anim = "base",
+    flag = 50  -- Geändert von 49 zu 50 für besseres Stoppen (50 = Loop mit Möglichkeit zum Stoppen)
 }
 
 

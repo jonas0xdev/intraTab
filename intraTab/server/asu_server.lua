@@ -50,7 +50,7 @@ local function SendASUDataToAPI(data)
         return false
     end
     
-    local endpoint = EnsureHttps(Config.ASUSync.APIEndpoint)
+    local endpoint = EnsureHttps(Config.ASUSync.PHPEndpoint)
     
     if not endpoint or endpoint == "" then
         print("^1[ASU-Sync]^7 Kein API-Endpunkt konfiguriert!")
@@ -62,7 +62,7 @@ local function SendASUDataToAPI(data)
     end
     
     local payload = {
-        intraRP_API_Key = Config.EMDSync.APIKey,
+        intraRP_API_Key = Config.ASUSync.APIKey,
         timestamp = os.time(),
         type = 'asu_protocol',
         data = data
@@ -96,7 +96,7 @@ AddEventHandler('asu:sendData', function(data)
     local src = source
     
     -- Check if ASU system is enabled
-    if not Config.ASUEnabled then
+    if not Config.ASU or not Config.ASU.Enabled then
         if Config.Debug then
             print("^3[ASU]^7 ASU system is disabled, rejecting data from player " .. src)
         end
@@ -139,7 +139,7 @@ end)
 
 -- Command to view stored protocols (admin only)
 RegisterCommand('asuprotokolle', function(source, args)
-    if not Config.ASUEnabled then
+    if not Config.ASU or not Config.ASU.Enabled then
         print("^3[ASU]^7 ASU system is disabled")
         return
     end
@@ -167,7 +167,7 @@ exports('getASUProtocols', function()
 end)
 
 if Config.Debug then
-    if Config.ASUEnabled then
+    if Config.ASU and Config.ASU.Enabled then
         print("^2[ASU]^7 Atemschutzüberwachung Server-System geladen")
         print("^2[ASU]^7 Framework: " .. (FrameworkName or "None"))
     else
