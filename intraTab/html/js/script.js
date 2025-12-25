@@ -92,6 +92,14 @@ function openFireTab(charData, url) {
 }
 
 function openTablet(charData, url) {
+  // Prevent double-opening
+  if (isTabletOpen) {
+    console.log(
+      "[intraTab] Tablet already opening/open, ignoring duplicate call"
+    );
+    return;
+  }
+
   characterData = charData;
   isTabletOpen = true;
 

@@ -96,6 +96,14 @@ window.addEventListener("message", function (event) {
 });
 
 function openFireTablet(charData, url) {
+  // Prevent double-opening
+  if (isTabletOpen) {
+    console.log(
+      "[FireTab] Tablet already opening/open, ignoring duplicate call"
+    );
+    return;
+  }
+
   characterData = charData;
   isTabletOpen = true;
 
@@ -134,12 +142,29 @@ function openFireTablet(charData, url) {
       tabletScreen.src = secureUrl;
     }
 
+    console.log(
+      "[FireTab] Hiding loading screen, showing iframe (restore path)"
+    );
     if (loadingScreen) loadingScreen.style.display = "none";
     tabletScreen.style.display = "block";
     return;
   }
 
-  if (loadingScreen) loadingScreen.style.display = "flex";
+  console.log("[FireTab] SHOWING loading screen, hiding iframe");
+  if (loadingScreen) {
+    console.log("[FireTab] loadingScreen element found:", loadingScreen);
+    console.log(
+      "[FireTab] loadingScreen current display:",
+      window.getComputedStyle(loadingScreen).display
+    );
+    loadingScreen.style.display = "flex";
+    console.log(
+      "[FireTab] loadingScreen display set to flex, new value:",
+      window.getComputedStyle(loadingScreen).display
+    );
+  } else {
+    console.error("[FireTab] loadingScreen element NOT FOUND!");
+  }
   if (tabletScreen) tabletScreen.style.display = "none";
 
   if (charData && charData.firstName && charData.lastName) {

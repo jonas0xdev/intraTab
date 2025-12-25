@@ -44,8 +44,14 @@ function hideAllTablets() {
   const enotf = document.getElementById("tabletContainer");
   const firetab = document.getElementById("firetabContainer");
 
-  if (enotf) enotf.classList.remove("active");
-  if (firetab) firetab.classList.remove("active");
+  if (enotf) {
+    enotf.classList.remove("active");
+    enotf.style.display = "none";
+  }
+  if (firetab) {
+    firetab.classList.remove("active");
+    firetab.style.display = "none";
+  }
 
   currentTablet = null;
   isTabletOpen = false;
@@ -93,16 +99,21 @@ window.addEventListener("message", function (event) {
 
     if (normalized === "firetab") {
       // FireTab - use firetab.js function
+      console.log("[Master] Showing FireTab container");
       showTablet("firetab");
-      if (
-        window.openFireTablet &&
-        typeof window.openFireTablet === "function"
-      ) {
-        console.log("[Master] Calling openFireTablet");
-        window.openFireTablet(charData, url);
-      } else {
-        console.error("[Master] openFireTablet function not found!");
-      }
+
+      // Wait a tiny bit for DOM to update before calling openFireTablet
+      setTimeout(() => {
+        if (
+          window.openFireTablet &&
+          typeof window.openFireTablet === "function"
+        ) {
+          console.log("[Master] Calling openFireTablet");
+          window.openFireTablet(charData, url);
+        } else {
+          console.error("[Master] openFireTablet function not found!");
+        }
+      }, 10);
     } else if (normalized === "enotf") {
       // eNOTF - use script.js function
       showTablet("enotf");

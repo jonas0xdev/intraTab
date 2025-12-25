@@ -287,6 +287,8 @@ body {
     background: #191919;
 }
 
+/* FireTab Loading Screen - more specific selector */
+#firetabContainer .loading-screen,
 .loading-screen {
     position: absolute;
     top: 60px;

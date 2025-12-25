@@ -80,12 +80,10 @@ Citizen.CreateThread(function()
     
     if Config.Debug then
         print("^2[intraTab]^7 Client framework detected: " .. (FrameworkName or "None"))
+        print("^2[intraTab]^7 Loaded BaseURL from config: ^3" .. (Config.BaseURL or "EMPTY") .. "^7")
+        print("^2[intraTab]^7 eNOTF Command: ^3/" .. Config.eNOTF.Command .. "^7")
+        print("^2[intraTab]^7 FireTab Command: ^3/" .. Config.FireTab.Command .. "^7")
     end
-    
-    -- Log der Config
-    print("^2[intraTab]^7 Loaded BaseURL from config: ^3" .. (Config.BaseURL or "EMPTY") .. "^7")
-    print("^2[intraTab]^7 eNOTF Command: ^3/" .. Config.eNOTF.Command .. "^7")
-    print("^2[intraTab]^7 FireTab Command: ^3/" .. Config.FireTab.Command .. "^7")
 end)
 
 local isTabletOpen = false
