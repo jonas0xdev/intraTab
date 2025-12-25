@@ -1,3 +1,4 @@
+// Debug mode is defined globally in master.js as window.DEBUG
 // Global state - managed by master.js
 // let isTabletOpen = false; // NOW MANAGED BY MASTER.JS
 // let characterData = null; // NOW MANAGED BY MASTER.JS
@@ -28,7 +29,7 @@ let FireTabURL = null;
 // Funktion zum Sicherstellen, dass die URL HTTPS verwendet
 function ensureHttps(url) {
   if (!url) {
-    console.warn("[FireTab] ensureHttps: URL is null or undefined");
+    if (DEBUG) console.warn("[FireTab] ensureHttps: URL is null or undefined");
     return url;
   }
 
@@ -37,20 +38,22 @@ function ensureHttps(url) {
 
   if (url.toLowerCase().startsWith("http://")) {
     url = url.replace(/^http:\/\//i, "https://");
-    console.warn(
-      "[FireTab] ⚠️  URL converted from HTTP to HTTPS:",
-      originalUrl,
-      "→",
-      url
-    );
+    if (DEBUG)
+      console.warn(
+        "[FireTab] ⚠️  URL converted from HTTP to HTTPS:",
+        originalUrl,
+        "→",
+        url
+      );
   } else if (
     !url.toLowerCase().startsWith("https://") &&
     !url.toLowerCase().startsWith("//")
   ) {
     url = "https://" + url;
-    console.log("[FireTab] Added HTTPS prefix:", originalUrl, "→", url);
+    if (DEBUG)
+      console.log("[FireTab] Added HTTPS prefix:", originalUrl, "→", url);
   } else {
-    console.log("[FireTab] ✓ URL already secure:", url);
+    if (DEBUG) console.log("[FireTab] ✓ URL already secure:", url);
   }
 
   if (
@@ -85,10 +88,11 @@ window.addEventListener("message", function (event) {
     case "closeTablet":
       // Only close FireTab here
       if (!data.tabletType || data.tabletType === "FireTab") {
-        console.log(
-          "[FireTab] closeTablet message received for:",
-          data.tabletType
-        );
+        if (DEBUG)
+          console.log(
+            "[FireTab] closeTablet message received for:",
+            data.tabletType
+          );
         closeTablet();
       }
       break;
@@ -98,20 +102,21 @@ window.addEventListener("message", function (event) {
 function openFireTablet(charData, url) {
   // Prevent double-opening
   if (isTabletOpen) {
-    console.log(
-      "[FireTab] Tablet already opening/open, ignoring duplicate call"
-    );
+    if (DEBUG)
+      console.log(
+        "[FireTab] Tablet already opening/open, ignoring duplicate call"
+      );
     return;
   }
 
   characterData = charData;
   isTabletOpen = true;
 
-  console.log("[FireTab] openFireTablet called with URL:", url);
+  if (DEBUG) console.log("[FireTab] openFireTablet called with URL:", url);
 
   if (url) {
     FireTabURL = ensureHttps(url);
-    console.log("[FireTab] FireTabURL set to:", FireTabURL);
+    if (DEBUG) console.log("[FireTab] FireTabURL set to:", FireTabURL);
   }
 
   const tabletContainer = document.getElementById("firetabContainer");
@@ -129,41 +134,48 @@ function openFireTablet(charData, url) {
   }
 
   if (tabletScreen && tabletScreen.src && tabletScreen.src !== "") {
-    console.log("[FireTab] Restoring tablet with existing content");
+    if (DEBUG) console.log("[FireTab] Restoring tablet with existing content");
 
     if (tabletScreen.src.toLowerCase().startsWith("http://")) {
       const secureUrl = tabletScreen.src.replace(/^http:\/\//i, "https://");
-      console.warn(
-        "[FireTab] ⚠️  Iframe had insecure URL, fixing:",
-        tabletScreen.src,
-        "→",
-        secureUrl
-      );
+      if (DEBUG)
+        console.warn(
+          "[FireTab] ⚠️  Iframe had insecure URL, fixing:",
+          tabletScreen.src,
+          "→",
+          secureUrl
+        );
       tabletScreen.src = secureUrl;
     }
 
-    console.log(
-      "[FireTab] Hiding loading screen, showing iframe (restore path)"
-    );
+    if (DEBUG)
+      console.log(
+        "[FireTab] Hiding loading screen, showing iframe (restore path)"
+      );
     if (loadingScreen) loadingScreen.style.display = "none";
     tabletScreen.style.display = "block";
     return;
   }
 
-  console.log("[FireTab] SHOWING loading screen, hiding iframe");
+  if (DEBUG) {
+    console.log("[FireTab] SHOWING loading screen, hiding iframe");
+    if (loadingScreen) {
+      console.log("[FireTab] loadingScreen element found:", loadingScreen);
+      console.log(
+        "[FireTab] loadingScreen current display:",
+        window.getComputedStyle(loadingScreen).display
+      );
+    } else {
+      console.error("[FireTab] loadingScreen element NOT FOUND!");
+    }
+  }
   if (loadingScreen) {
-    console.log("[FireTab] loadingScreen element found:", loadingScreen);
-    console.log(
-      "[FireTab] loadingScreen current display:",
-      window.getComputedStyle(loadingScreen).display
-    );
     loadingScreen.style.display = "flex";
-    console.log(
-      "[FireTab] loadingScreen display set to flex, new value:",
-      window.getComputedStyle(loadingScreen).display
-    );
-  } else {
-    console.error("[FireTab] loadingScreen element NOT FOUND!");
+    if (DEBUG)
+      console.log(
+        "[FireTab] loadingScreen display set to flex, new value:",
+        window.getComputedStyle(loadingScreen).display
+      );
   }
   if (tabletScreen) tabletScreen.style.display = "none";
 
@@ -192,7 +204,7 @@ function openFireTablet(charData, url) {
         }
       })
       .catch((error) => {
-        console.error("Error getting character data:", error);
+        if (DEBUG) console.error("Error getting character data:", error);
         if (loadingText)
           loadingText.textContent = "Fehler bei der Verbindung zum Server";
       });
@@ -200,7 +212,7 @@ function openFireTablet(charData, url) {
 }
 
 function setCharacterData(charData) {
-  console.log("[FireTab] Setting character data:", charData);
+  if (DEBUG) console.log("[FireTab] Setting character data:", charData);
   characterData = charData;
 
   if (isTabletOpen && charData && charData.firstName && charData.lastName) {
@@ -220,36 +232,38 @@ function loadFireTab(charData) {
   }
 
   const url = ensureHttps(FireTabURL);
-  console.log("[FireTab] loadFireTab: Final URL to load:", url);
+  if (DEBUG) console.log("[FireTab] loadFireTab: Final URL to load:", url);
 
   const iframe = document.getElementById("firetabScreen");
   const loadingScreen = document.getElementById("firetabLoadingScreen");
 
   if (!iframe) {
-    console.error("[FireTab] Could not find iframe element 'firetabScreen'");
+    if (DEBUG)
+      console.error("[FireTab] Could not find iframe element 'firetabScreen'");
     return;
   }
 
   if (!loadingScreen) {
-    console.warn(
-      "[FireTab] Could not find loading screen element 'firetabLoadingScreen'"
-    );
+    if (DEBUG)
+      console.warn(
+        "[FireTab] Could not find loading screen element 'firetabLoadingScreen'"
+      );
   }
 
-  console.log("[FireTab] Setting iframe.src to:", url);
+  if (DEBUG) console.log("[FireTab] Setting iframe.src to:", url);
 
   // Set onload handler BEFORE setting src
   iframe.onload = () => {
-    console.log("[FireTab] Iframe loaded successfully");
+    if (DEBUG) console.log("[FireTab] Iframe loaded successfully");
     if (loadingScreen) {
       loadingScreen.style.display = "none";
-      console.log("[FireTab] Loading screen hidden via onload");
+      if (DEBUG) console.log("[FireTab] Loading screen hidden via onload");
     }
     iframe.style.display = "block";
   };
 
   iframe.onerror = () => {
-    console.error("[FireTab] Error loading iframe");
+    if (DEBUG) console.error("[FireTab] Error loading iframe");
     if (loadingScreen) {
       const text = document.getElementById("firetabLoadingText");
       if (text) text.textContent = "Fehler beim Laden der FireTab";
@@ -262,7 +276,8 @@ function loadFireTab(charData) {
   // Fallback timeout
   setTimeout(() => {
     if (loadingScreen && loadingScreen.style.display !== "none") {
-      console.log("[FireTab] Timeout: forcing loading screen to hide");
+      if (DEBUG)
+        console.log("[FireTab] Timeout: forcing loading screen to hide");
       loadingScreen.style.display = "none";
       iframe.style.display = "block";
     }
@@ -272,7 +287,7 @@ function loadFireTab(charData) {
 function closeTablet() {
   if (!isTabletOpen) return;
 
-  console.log("[FireTab] Closing FireTab tablet UI");
+  if (DEBUG) console.log("[FireTab] Closing FireTab tablet UI");
 
   isTabletOpen = false;
   const tabletContainer = document.getElementById("firetabContainer");
@@ -290,12 +305,12 @@ function closeTablet() {
     },
     body: JSON.stringify({}),
   }).catch((error) => {
-    console.error("Error closing tablet:", error);
+    if (DEBUG) console.error("Error closing tablet:", error);
   });
 }
 
 function goHome() {
-  console.log("[FireTab] Navigating to home");
+  if (DEBUG) console.log("[FireTab] Navigating to home");
   const iframe = document.getElementById("firetabScreen");
   if (iframe && FireTabURL) {
     iframe.src = ensureHttps(FireTabURL);

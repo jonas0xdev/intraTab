@@ -1,3 +1,4 @@
+// Debug mode is defined globally in master.js as window.DEBUG
 // Global state - managed by master.js
 // let isTabletOpen = false; // NOW MANAGED BY MASTER.JS
 // let characterData = null; // NOW MANAGED BY MASTER.JS
@@ -9,7 +10,7 @@ let currentUrl = "";
 // Funktion zum Sicherstellen, dass die URL HTTPS verwendet (FiveM-Anforderung)
 function ensureHttps(url) {
   if (!url) {
-    console.warn("[intraTab] ensureHttps: URL is null or undefined");
+    if (DEBUG) console.warn("[intraTab] ensureHttps: URL is null or undefined");
     return url;
   }
 
@@ -21,12 +22,13 @@ function ensureHttps(url) {
   // Wenn die URL mit http:// beginnt, ersetze es durch https://
   if (url.toLowerCase().startsWith("http://")) {
     url = url.replace(/^http:\/\//i, "https://");
-    console.warn(
-      "[intraTab] ⚠️  URL converted from HTTP to HTTPS:",
-      originalUrl,
-      "→",
-      url
-    );
+    if (DEBUG)
+      console.warn(
+        "[intraTab] ⚠️  URL converted from HTTP to HTTPS:",
+        originalUrl,
+        "→",
+        url
+      );
   }
   // Wenn die URL nicht mit einem Protokoll beginnt, füge https:// hinzu
   else if (
@@ -34,9 +36,10 @@ function ensureHttps(url) {
     !url.toLowerCase().startsWith("//")
   ) {
     url = "https://" + url;
-    console.log("[intraTab] Added HTTPS prefix:", originalUrl, "→", url);
+    if (DEBUG)
+      console.log("[intraTab] Added HTTPS prefix:", originalUrl, "→", url);
   } else {
-    console.log("[intraTab] ✓ URL already secure:", url);
+    if (DEBUG) console.log("[intraTab] ✓ URL already secure:", url);
   }
 
   // Füge trailing slash hinzu, falls URL auf einen Pfad endet (verhindert HTTP-Redirects)
@@ -49,7 +52,7 @@ function ensureHttps(url) {
     const lastSegment = url.split("/").pop();
     if (lastSegment && !lastSegment.includes(".")) {
       url = url + "/";
-      console.log("[intraTab] Added trailing slash:", url);
+      if (DEBUG) console.log("[intraTab] Added trailing slash:", url);
     }
   }
 
@@ -75,10 +78,11 @@ window.addEventListener("message", function (event) {
     case "closeTablet":
       // Only close eNOTF tablet here
       if (!data.tabletType || data.tabletType === "eNOTF") {
-        console.log(
-          "[intraTab] closeTablet message received for:",
-          data.tabletType
-        );
+        if (DEBUG)
+          console.log(
+            "[intraTab] closeTablet message received for:",
+            data.tabletType
+          );
         closeTablet();
       }
       break;
@@ -86,7 +90,7 @@ window.addEventListener("message", function (event) {
 });
 
 function openFireTab(charData, url) {
-  console.log("[intraTab] Redirecting to FireTab with URL:", url);
+  if (DEBUG) console.log("[intraTab] Redirecting to FireTab with URL:", url);
   // FireTab wird in einer separaten HTML-Datei gehandhabt
   // Diese Funktion ist für zukünftige Integrationen gedacht
 }
@@ -94,20 +98,21 @@ function openFireTab(charData, url) {
 function openTablet(charData, url) {
   // Prevent double-opening
   if (isTabletOpen) {
-    console.log(
-      "[intraTab] Tablet already opening/open, ignoring duplicate call"
-    );
+    if (DEBUG)
+      console.log(
+        "[intraTab] Tablet already opening/open, ignoring duplicate call"
+      );
     return;
   }
 
   characterData = charData;
   isTabletOpen = true;
 
-  console.log("[intraTab] openTablet called with URL:", url);
+  if (DEBUG) console.log("[intraTab] openTablet called with URL:", url);
 
   if (url) {
     IntraURL = ensureHttps(url);
-    console.log("[intraTab] IntraURL set to:", IntraURL);
+    if (DEBUG) console.log("[intraTab] IntraURL set to:", IntraURL);
   }
 
   const tabletContainer = document.getElementById("tabletContainer");
@@ -121,20 +126,22 @@ function openTablet(charData, url) {
   }
 
   if (tabletScreen && tabletScreen.src && tabletScreen.src !== "") {
-    console.log(
-      "[intraTab] Restoring tablet with existing content, checking URL:",
-      tabletScreen.src
-    );
+    if (DEBUG)
+      console.log(
+        "[intraTab] Restoring tablet with existing content, checking URL:",
+        tabletScreen.src
+      );
 
     // Validate existing iframe src is HTTPS
     if (tabletScreen.src.toLowerCase().startsWith("http://")) {
       const secureUrl = tabletScreen.src.replace(/^http:\/\//i, "https://");
-      console.warn(
-        "[intraTab] ⚠️  Iframe had insecure URL, fixing:",
-        tabletScreen.src,
-        "→",
-        secureUrl
-      );
+      if (DEBUG)
+        console.warn(
+          "[intraTab] ⚠️  Iframe had insecure URL, fixing:",
+          tabletScreen.src,
+          "→",
+          secureUrl
+        );
       tabletScreen.src = secureUrl;
     }
 
@@ -177,7 +184,7 @@ function openTablet(charData, url) {
         }
       })
       .catch((error) => {
-        console.error("Error getting character data:", error);
+        if (DEBUG) console.error("Error getting character data:", error);
         if (loadingText)
           loadingText.textContent = "Fehler bei der Verbindung zum Server";
       });
@@ -185,7 +192,7 @@ function openTablet(charData, url) {
 }
 
 function setCharacterData(charData) {
-  console.log("Setting character data:", charData);
+  if (DEBUG) console.log("Setting character data:", charData);
   characterData = charData;
 
   if (isTabletOpen && charData && charData.firstName && charData.lastName) {
@@ -201,7 +208,7 @@ function loadIntraSystem(charData) {
   }
 
   const url = ensureHttps(IntraURL);
-  console.log("[intraTab] loadIntraSystem: Final URL to load:", url);
+  if (DEBUG) console.log("[intraTab] loadIntraSystem: Final URL to load:", url);
 
   addToHistory(url);
   currentUrl = url;
@@ -211,11 +218,11 @@ function loadIntraSystem(charData) {
   const loadingScreen = document.getElementById("loadingScreen");
 
   if (iframe) {
-    console.log("[intraTab] Setting iframe.src to:", url);
+    if (DEBUG) console.log("[intraTab] Setting iframe.src to:", url);
 
     // Set onload handler BEFORE setting src
     iframe.onload = () => {
-      console.log("[intraTab] Iframe loaded successfully");
+      if (DEBUG) console.log("[intraTab] Iframe loaded successfully");
       if (loadingScreen) loadingScreen.style.display = "none";
       iframe.style.display = "block";
       updateNavigationButtons();
@@ -226,10 +233,11 @@ function loadIntraSystem(charData) {
       try {
         const currentSrc = iframe.src;
         if (currentSrc && currentSrc.toLowerCase().startsWith("http://")) {
-          console.error(
-            "[intraTab] 🚨 CRITICAL: Iframe redirected to HTTP, forcing HTTPS:",
-            currentSrc
-          );
+          if (DEBUG)
+            console.error(
+              "[intraTab] 🚨 CRITICAL: Iframe redirected to HTTP, forcing HTTPS:",
+              currentSrc
+            );
           const secureSrc = currentSrc.replace(/^http:\/\//i, "https://");
           iframe.src = secureSrc;
         }
@@ -245,9 +253,10 @@ function loadIntraSystem(charData) {
     // Fallback: Verstecke loading screen nach 3 Sekunden falls onload nicht fired
     setTimeout(() => {
       if (loadingScreen && loadingScreen.style.display !== "none") {
-        console.warn(
-          "[intraTab] Loading screen fallback timeout - hiding loading screen"
-        );
+        if (DEBUG)
+          console.warn(
+            "[intraTab] Loading screen fallback timeout - hiding loading screen"
+          );
         loadingScreen.style.display = "none";
         iframe.style.display = "block";
         updateNavigationButtons();
@@ -260,7 +269,7 @@ function loadIntraSystem(charData) {
 }
 
 function closeTablet() {
-  console.log("[intraTab] Closing eNOTF tablet UI");
+  if (DEBUG) console.log("[intraTab] Closing eNOTF tablet UI");
 
   isTabletOpen = false;
   const tabletContainer = document.getElementById("tabletContainer");
@@ -279,7 +288,7 @@ function closeTablet() {
     },
     body: JSON.stringify({}),
   }).catch((error) => {
-    console.error("Error closing tablet:", error);
+    if (DEBUG) console.error("Error closing tablet:", error);
   });
 }
 
@@ -320,7 +329,7 @@ function updatePageTitle(title) {
 
 function goBack() {
   if (!isTabletOpen || historyIndex <= 0) {
-    console.log("Cannot go back");
+    if (DEBUG) console.log("Cannot go back");
     return;
   }
 
@@ -344,13 +353,13 @@ function goBack() {
     }
 
     updateNavigationButtons();
-    console.log("Navigated back to:", previousUrl);
+    if (DEBUG) console.log("Navigated back to:", previousUrl);
   }
 }
 
 function goHome() {
   if (!isTabletOpen || !characterData) {
-    console.log("Cannot go home");
+    if (DEBUG) console.log("Cannot go home");
     return;
   }
 
@@ -377,12 +386,12 @@ function goHome() {
 
   updateNavigationButtons();
   updatePageTitle("IntraRP Verwaltungsportal");
-  console.log("Navigated to home:", homeUrl);
+  if (DEBUG) console.log("Navigated to home:", homeUrl);
 }
 
 function refreshPage() {
   if (!isTabletOpen || !currentUrl) {
-    console.log("Cannot refresh");
+    if (DEBUG) console.log("Cannot refresh");
     return;
   }
 
@@ -403,7 +412,7 @@ function refreshPage() {
     }, 100);
   }
 
-  console.log("Refreshed page:", currentUrl);
+  if (DEBUG) console.log("Refreshed page:", currentUrl);
 }
 
 function addEventListeners() {

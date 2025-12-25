@@ -176,7 +176,7 @@ end)
 -- Debug info
 if Config.Debug then
     print("^2[intraTab]^7 Framework erkannt: " .. (FrameworkName or "None"))
-    if not Framework then
-        print("^1[intraTab]^7 FEHLER: Kein unterstütztes Framework gefunden!")
-    end
+end
+if Config.Debug and not Framework then
+    print("^1[intraTab]^7 FEHLER: Kein unterstütztes Framework gefunden!")
 end

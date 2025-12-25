@@ -2,11 +2,14 @@
 // MASTER.JS - NUI Orchestrierung für mehrere Tablets
 // ==========================================
 
+// Debug mode - set to false to disable all console logs
+window.DEBUG = false;
+
 let currentTablet = null;
 let isTabletOpen = false;
 let characterData = null;
 
-console.log("[Master] Loading master.js...");
+if (DEBUG) console.log("[Master] Loading master.js...");
 
 // ==========================================
 // TABLET CONTROL FUNCTIONS
@@ -37,7 +40,7 @@ function showTablet(tabletType) {
   }
 
   isTabletOpen = true;
-  console.log(`[Master] Showing ${currentTablet} tablet`);
+  if (DEBUG) console.log(`[Master] Showing ${currentTablet} tablet`);
 }
 
 function hideAllTablets() {
@@ -55,11 +58,11 @@ function hideAllTablets() {
 
   currentTablet = null;
   isTabletOpen = false;
-  console.log("[Master] All tablets hidden");
+  if (DEBUG) console.log("[Master] All tablets hidden");
 }
 
 function closeTablet() {
-  console.log("[Master] closeTablet() called");
+  if (DEBUG) console.log("[Master] closeTablet() called");
   hideAllTablets();
 
   // Reset cursor explicitly
@@ -71,11 +74,13 @@ function closeTablet() {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ tabletType: currentTablet }),
-  }).catch((err) => console.log("[Master] Fetch error:", err));
+  }).catch((err) => {
+    if (DEBUG) console.log("[Master] Fetch error:", err);
+  });
 }
 
 function goHome() {
-  console.log("[Master] goHome() called for:", currentTablet);
+  if (DEBUG) console.log("[Master] goHome() called for:", currentTablet);
 }
 
 // ==========================================
@@ -87,7 +92,7 @@ window.addEventListener("message", function (event) {
 
   if (!data) return;
 
-  console.log("[Master] NUI message received:", data);
+  if (DEBUG) console.log("[Master] NUI message received:", data);
 
   // Handle openTablet message from server
   if (data.type === "openTablet") {
@@ -99,7 +104,7 @@ window.addEventListener("message", function (event) {
 
     if (normalized === "firetab") {
       // FireTab - use firetab.js function
-      console.log("[Master] Showing FireTab container");
+      if (DEBUG) console.log("[Master] Showing FireTab container");
       showTablet("firetab");
 
       // Wait a tiny bit for DOM to update before calling openFireTablet
@@ -108,17 +113,18 @@ window.addEventListener("message", function (event) {
           window.openFireTablet &&
           typeof window.openFireTablet === "function"
         ) {
-          console.log("[Master] Calling openFireTablet");
+          if (DEBUG) console.log("[Master] Calling openFireTablet");
           window.openFireTablet(charData, url);
         } else {
-          console.error("[Master] openFireTablet function not found!");
+          if (DEBUG)
+            console.error("[Master] openFireTablet function not found!");
         }
       }, 10);
     } else if (normalized === "enotf") {
       // eNOTF - use script.js function
       showTablet("enotf");
       if (window.openTablet && typeof window.openTablet === "function") {
-        console.log("[Master] Calling openTablet for enotf");
+        if (DEBUG) console.log("[Master] Calling openTablet for enotf");
         window.openTablet(charData, url);
       }
     }
@@ -131,14 +137,16 @@ window.addEventListener("message", function (event) {
 
     // Only close if type matches current tablet or no type provided
     if (!reqType || !curType || reqType === curType) {
-      console.log(
-        `[Master] closeTablet message for ${reqType || "any"}, closing.`
-      );
+      if (DEBUG)
+        console.log(
+          `[Master] closeTablet message for ${reqType || "any"}, closing.`
+        );
       closeTablet();
     } else {
-      console.log(
-        `[Master] closeTablet message for ${reqType}, ignored; current=${curType}`
-      );
+      if (DEBUG)
+        console.log(
+          `[Master] closeTablet message for ${reqType}, ignored; current=${curType}`
+        );
     }
   }
 });
@@ -147,4 +155,4 @@ window.addEventListener("message", function (event) {
 // auto-close events from the DOM. NUI will only close via explicit
 // messages or UI controls.
 
-console.log("[Master] Initialization complete");
+if (DEBUG) console.log("[Master] Initialization complete");

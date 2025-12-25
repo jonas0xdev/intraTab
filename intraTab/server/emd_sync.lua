@@ -15,12 +15,14 @@ local function SendDataToPHP(data)
                 print("^2[EMD-Sync]^7 Daten erfolgreich gesendet! Antwort: " .. response)
             end
         else
-            print("^1[EMD-Sync]^7 Fehler beim Senden der Daten. Statuscode: " .. statusCode)
-            if statusCode == 401 then
-                print("^1[EMD-Sync]^7 API-Key ist ungültig! Bitte Config.EMDSync.APIKey in config.lua korrekt setzen.")
-            end
-            if Config.Debug and response then
-                print("^1[EMD-Sync]^7 Antwort: " .. response)
+            if Config.Debug then
+                print("^1[EMD-Sync]^7 Fehler beim Senden der Daten. Statuscode: " .. statusCode)
+                if statusCode == 401 then
+                    print("^1[EMD-Sync]^7 API-Key ist ungültig! Bitte Config.EMDSync.APIKey in config.lua korrekt setzen.")
+                end
+                if response then
+                    print("^1[EMD-Sync]^7 Antwort: " .. response)
+                end
             end
         end
     end, 'POST', json.encode({
@@ -44,7 +46,9 @@ local function GetDispatchData()
     end)
 
     if not success then
-        print("^1[EMD-Sync]^7 Fehler beim Abrufen von Daten aus dem emergencydispatch Export!")
+        if Config.Debug then
+            print("^1[EMD-Sync]^7 Fehler beim Abrufen von Daten aus dem emergencydispatch Export!")
+        end
         return nil
     end
 
@@ -89,10 +93,14 @@ AddEventHandler('emd:syncNow', function()
     
     -- Prüfe ob Spieler Admin ist (optional)
     if IsPlayerAceAllowed(source, 'command.emdsync') then
-        print("^2[EMD-Sync]^7 Manuelle Synchronisierung durch den Player ausgelöst " .. source)
+        if Config.Debug then
+            print("^2[EMD-Sync]^7 Manuelle Synchronisierung durch den Player ausgelöst " .. source)
+        end
         SyncDispatchData()
     else
-        print("^1[EMD-Sync]^7 Unbefugter Synchronisierungsversuch durch Spieler " .. source)
+        if Config.Debug then
+            print("^1[EMD-Sync]^7 Unbefugter Synchronisierungsversuch durch Spieler " .. source)
+        end
     end
 end)
 
@@ -123,12 +131,16 @@ CreateThread(function()
     Wait(1000) -- Warte bis Config geladen ist
     
     if not Config or not Config.EMDSync or not Config.EMDSync.Enabled then
-        print("^3[EMD-Sync]^7 EMD-Sync ist in der Konfiguration deaktiviert")
+        if Config.Debug then
+            print("^3[EMD-Sync]^7 EMD-Sync ist in der Konfiguration deaktiviert")
+        end
         return
     end
     
-    print("^2[EMD-Sync]^7 Automatische Synchronisierung starten (Intervall: " .. (Config.EMDSync.SyncInterval / 1000) .. "s)")
-    print("^2[EMD-Sync]^7 PHP-Endpunkt: " .. Config.EMDSync.PHPEndpoint)
+    if Config.Debug then
+        print("^2[EMD-Sync]^7 Automatische Synchronisierung starten (Intervall: " .. (Config.EMDSync.SyncInterval / 1000) .. "s)")
+        print("^2[EMD-Sync]^7 PHP-Endpunkt: " .. Config.EMDSync.PHPEndpoint)
+    end
     
     while true do
         Wait(Config.EMDSync.SyncInterval)
@@ -144,7 +156,9 @@ end)
 -- Command zum manuellen Triggern
 RegisterCommand('emdsync', function(source, args)
     if source == 0 or IsPlayerAceAllowed(source, 'command.emdsync') then
-        print("^2[EMD-Sync]^7 Manueller Synchronisierungsbefehl ausgeführt")
+        if Config.Debug then
+            print("^2[EMD-Sync]^7 Manueller Synchronisierungsbefehl ausgeführt")
+        end
         SyncDispatchData()
     end
 end, true)
@@ -159,11 +173,15 @@ CreateThread(function()
     if not Config or not Config.EMDSync or not Config.EMDSync.Enabled then
         return
     end
-    print("^2[EMD-Sync]^7 Erste Synchronisierung...")
+    if Config.Debug then
+        print("^2[EMD-Sync]^7 Erste Synchronisierung...")
+    end
     SyncDispatchData()
 end)
 
-print("^2[EMD-Sync]^7 Skript erfolgreich geladen!")
+if Config.Debug then
+    print("^2[EMD-Sync]^7 Skript erfolgreich geladen!")
+end
 
 --[[ =========================================
      DISPATCH LOG SYNC - Einsatz-Statusmeldungen
@@ -188,7 +206,9 @@ local function ExecuteQuery(query, parameters)
             promise:resolve(result)
         end)
     else
-        print("^1[EMD-Sync]^7 Keine MySQL-Resource gefunden! Bitte oxmysql oder mysql-async installieren.")
+        if Config.Debug then
+            print("^1[EMD-Sync]^7 Keine MySQL-Resource gefunden! Bitte oxmysql oder mysql-async installieren.")
+        end
         promise:resolve(nil)
     end
     
@@ -355,12 +375,14 @@ local function SendMissionDataToPHP(missions)
                 print("^2[Dispatch-Log-Sync]^7 Letzte verarbeitete Log-ID aktualisiert: " .. lastProcessedId)
             end
         else
-            print("^1[Dispatch-Log-Sync]^7 Fehler beim Senden der Einsatzdaten. Statuscode: " .. statusCode)
-            if statusCode == 401 then
-                print("^1[Dispatch-Log-Sync]^7 API-Key ist ungültig! Bitte Config.EMDSync.APIKey in config.lua korrekt setzen.")
-            end
-            if Config.Debug and response then
-                print("^1[Dispatch-Log-Sync]^7 Antwort: " .. response)
+            if Config.Debug then
+                print("^1[Dispatch-Log-Sync]^7 Fehler beim Senden der Einsatzdaten. Statuscode: " .. statusCode)
+                if statusCode == 401 then
+                    print("^1[Dispatch-Log-Sync]^7 API-Key ist ungültig! Bitte Config.EMDSync.APIKey in config.lua korrekt setzen.")
+                end
+                if response then
+                    print("^1[Dispatch-Log-Sync]^7 Antwort: " .. response)
+                end
             end
             -- lastProcessedId NICHT aktualisieren bei Fehler, damit beim nächsten Versuch erneut gesendet wird
         end
@@ -419,13 +441,17 @@ CreateThread(function()
     Wait(3000) -- Warte bis Config geladen ist
     
     if not Config or not Config.EMDSync or not Config.EMDSync.DispatchLogSync or not Config.EMDSync.DispatchLogSync.Enabled then
-        print("^3[Dispatch-Log-Sync]^7 Dispatch-Log-Sync ist in der Konfiguration deaktiviert")
+        if Config.Debug then
+            print("^3[Dispatch-Log-Sync]^7 Dispatch-Log-Sync ist in der Konfiguration deaktiviert")
+        end
         return
     end
     
-    print("^2[Dispatch-Log-Sync]^7 Automatische Dispatch-Log-Synchronisierung gestartet")
-    print("^2[Dispatch-Log-Sync]^7 Prüfintervall: " .. (Config.EMDSync.DispatchLogSync.CheckInterval / 1000) .. "s")
-    print("^2[Dispatch-Log-Sync]^7 PHP-Endpunkt: " .. Config.EMDSync.PHPEndpoint)
+    if Config.Debug then
+        print("^2[Dispatch-Log-Sync]^7 Automatische Dispatch-Log-Synchronisierung gestartet")
+        print("^2[Dispatch-Log-Sync]^7 Prüfintervall: " .. (Config.EMDSync.DispatchLogSync.CheckInterval / 1000) .. "s")
+        print("^2[Dispatch-Log-Sync]^7 PHP-Endpunkt: " .. Config.EMDSync.PHPEndpoint)
+    end
     
     while true do
         Wait(Config.EMDSync.DispatchLogSync.CheckInterval)
@@ -441,7 +467,9 @@ end)
 -- Command zum manuellen Triggern des Dispatch-Log-Syncs
 RegisterCommand('dispatchlogsync', function(source, args)
     if source == 0 or IsPlayerAceAllowed(source, 'command.dispatchlogsync') then
-        print("^2[Dispatch-Log-Sync]^7 Manuelle Synchronisierung ausgeführt")
+        if Config.Debug then
+            print("^2[Dispatch-Log-Sync]^7 Manuelle Synchronisierung ausgeführt")
+        end
         SyncDispatchLogs()
     end
 end, true)
@@ -449,7 +477,9 @@ end, true)
 -- Export für andere Scripts
 exports('syncDispatchLogs', SyncDispatchLogs)
 
-print("^2[Dispatch-Log-Sync]^7 Dispatch-Log-Sync erfolgreich geladen!")
+if Config.Debug then
+    print("^2[Dispatch-Log-Sync]^7 Dispatch-Log-Sync erfolgreich geladen!")
+end
 
 --[[ =========================================
      ECHTZEIT STATUS-SYNCHRONISIERUNG
@@ -568,12 +598,14 @@ local function SendStatusesToPHP(statuses)
                 end
             end
         else
-            print("^1[Status-Sync]^7 Fehler beim Senden der Statusmeldungen. Statuscode: " .. statusCode)
-            if statusCode == 401 then
-                print("^1[Status-Sync]^7 API-Key ist ungültig! Bitte Config.EMDSync.APIKey in config.lua korrekt setzen.")
-            end
-            if Config.Debug and response then
-                print("^1[Status-Sync]^7 Antwort: " .. response)
+            if Config.Debug then
+                print("^1[Status-Sync]^7 Fehler beim Senden der Statusmeldungen. Statuscode: " .. statusCode)
+                if statusCode == 401 then
+                    print("^1[Status-Sync]^7 API-Key ist ungültig! Bitte Config.EMDSync.APIKey in config.lua korrekt setzen.")
+                end
+                if response then
+                    print("^1[Status-Sync]^7 Antwort: " .. response)
+                end
             end
             -- lastStatusId NICHT aktualisieren bei Fehler
         end
@@ -605,16 +637,20 @@ CreateThread(function()
     Wait(2000) -- Warte bis Config geladen ist
     
     if not Config or not Config.EMDSync or not Config.EMDSync.StatusSync or not Config.EMDSync.StatusSync.Enabled then
-        print("^3[Status-Sync]^7 Echtzeit-Status-Sync ist in der Konfiguration deaktiviert")
+        if Config.Debug then
+            print("^3[Status-Sync]^7 Echtzeit-Status-Sync ist in der Konfiguration deaktiviert")
+        end
         return
     end
     
     LoadLastStatusId()
     
-    print("^2[Status-Sync]^7 Echtzeit-Status-Synchronisierung gestartet")
-    print("^2[Status-Sync]^7 Überwachte Status: " .. table.concat(Config.EMDSync.StatusSync.SyncStatuses, ", "))
-    print("^2[Status-Sync]^7 Polling-Intervall: " .. (Config.EMDSync.StatusSync.PollInterval / 1000) .. "s")
-    print("^2[Status-Sync]^7 PHP-Endpunkt: " .. Config.EMDSync.PHPEndpoint)
+    if Config.Debug then
+        print("^2[Status-Sync]^7 Echtzeit-Status-Synchronisierung gestartet")
+        print("^2[Status-Sync]^7 Überwachte Status: " .. table.concat(Config.EMDSync.StatusSync.SyncStatuses, ", "))
+        print("^2[Status-Sync]^7 Polling-Intervall: " .. (Config.EMDSync.StatusSync.PollInterval / 1000) .. "s")
+        print("^2[Status-Sync]^7 PHP-Endpunkt: " .. Config.EMDSync.PHPEndpoint)
+    end
     
     while true do
         Wait(Config.EMDSync.StatusSync.PollInterval)
@@ -630,7 +666,9 @@ end)
 -- Command zum manuellen Triggern des Status-Syncs
 RegisterCommand('statussync', function(source, args)
     if source == 0 or IsPlayerAceAllowed(source, 'command.statussync') then
-        print("^2[Status-Sync]^7 Manuelle Status-Synchronisierung ausgeführt")
+        if Config.Debug then
+            print("^2[Status-Sync]^7 Manuelle Status-Synchronisierung ausgeführt")
+        end
         SyncStatusMessages()
     end
 end, true)
