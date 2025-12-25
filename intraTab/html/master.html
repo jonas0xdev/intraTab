@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>intraTab System</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/firetab.css">
+    <style>
+        /* Both tablet containers hidden by default */
+        #tabletContainer,
+        #firetabContainer {
+            display: none !important;
+        }
+
+        /* Show when .active class is added */
+        #tabletContainer.active,
+        #firetabContainer.active {
+            display: flex !important;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- eNOTF TABLET (exact copy from index.html structure) -->
+    <div class="tablet-container" id="tabletContainer">
+        <div class="tablet-frame">
+            <div class="holder-left"></div>
+            <div class="holder-span"></div>
+            <div class="holder-right"></div>
+            <div class="tablet-header">
+                <div class="tablet-nav">
+                    <button class="nav-btn home-btn" id="homeBtn" onclick="goHome()" title="Home">
+                        <span class="icon">🏠</span>
+                    </button>
+                </div>
+                <div class="tablet-title" id="pageTitle">IntraRP Verwaltungsportal</div>
+                <button class="close-btn" onclick="closeTablet()" title="Tablet schließen (ESC)">×</button>
+            </div>
+            <div class="loading-screen" id="loadingScreen">
+                <div class="loading-spinner"></div>
+                <h3>Lade eNOTF...</h3>
+                <p id="loadingText">Verbindung zum Server wird hergestellt...</p>
+            </div>
+            <iframe class="tablet-screen" id="tabletScreen"></iframe>
+        </div>
+    </div>
+
+    <!-- FIRETAB TABLET (exact copy from firetab.html structure) -->
+    <div class="tablet-container" id="firetabContainer">
+        <div class="tablet-frame-firetab">
+            <div class="tablet-thick-left-1"></div>
+            <div class="tablet-thick-left-2"></div>
+            <div class="tablet-thick-right-1"></div>
+            <div class="tablet-thick-right-2"></div>
+            <div class="tablet-thick-right-3"></div>
+            <div class="tablet-header">
+                <div class="tablet-nav">
+                    <button class="nav-btn home-btn" id="firetabHomeBtn" onclick="goHome()" title="Home">
+                        <span class="icon">🏠</span>
+                    </button>
+                </div>
+                <div class="tablet-title" id="firetabPageTitle">FireTab Einsatzverwaltung</div>
+                <button class="close-btn" onclick="closeTablet()" title="Tablet schließen (ESC)">×</button>
+            </div>
+            <div class="loading-screen" id="firetabLoadingScreen">
+                <div class="loading-spinner"></div>
+                <h3>Lade FireTab...</h3>
+                <p id="firetabLoadingText">Verbindung zum Server wird hergestellt...</p>
+            </div>
+            <iframe class="tablet-screen" id="firetabScreen"></iframe>
+        </div>
+    </div>
+
+    <script src="js/firetab.js"></script>
+    <script src="js/script.js"></script>
+    <script src="js/master.js"></script>
+</body>
+
+</html>
