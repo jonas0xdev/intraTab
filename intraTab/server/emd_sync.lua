@@ -322,6 +322,37 @@ local function GetCompletedMissions(missions)
     return completed
 end
 
+-- Funktion zum Abrufen der Dispatch-Daten aus emd_dispatchlist
+local function GetDispatchListData(missionNumbers)
+    if not Config.EMDSync or not Config.EMDSync.DispatchLogSync or not Config.EMDSync.DispatchLogSync.Enabled then
+        return nil
+    end
+    
+    if #missionNumbers == 0 then
+        return {}
+    end
+    
+    -- Erstelle Platzhalter für die IN-Klausel
+    local placeholders = {}
+    for i = 1, #missionNumbers do
+        table.insert(placeholders, '?')
+    end
+    
+    local query = string.format([[
+        SELECT id, number, dispatch
+        FROM emd_dispatchlist
+        WHERE number IN (%s)
+    ]], table.concat(placeholders, ','))
+    
+    local result = ExecuteQuery(query, missionNumbers)
+    
+    if Config.Debug and result then
+        print("^2[Dispatch-Log-Sync]^7 " .. #result .. " Einsatzdaten aus emd_dispatchlist gefunden")
+    end
+    
+    return result or {}
+end
+
 -- Funktion zum Senden der Einsatzdaten an PHP (verwendet EMDSync Endpunkt)
 local function SendMissionDataToPHP(missions)
     if not Config.EMDSync or not Config.EMDSync.Enabled then
@@ -337,6 +368,21 @@ local function SendMissionDataToPHP(missions)
         print("^2[Dispatch-Log-Sync]^7 Endpunkt: " .. Config.EMDSync.PHPEndpoint)
     end
     
+    -- Hole die Einsatznummern
+    local missionNumbers = {}
+    for _, mission in ipairs(missions) do
+        table.insert(missionNumbers, mission.number)
+    end
+    
+    -- Hole die zugehörigen Dispatch-Daten
+    local dispatchListData = GetDispatchListData(missionNumbers)
+    
+    -- Erstelle eine Map für schnellen Zugriff
+    local dispatchMap = {}
+    for _, dispatchEntry in ipairs(dispatchListData) do
+        dispatchMap[tostring(dispatchEntry.number)] = dispatchEntry
+    end
+    
     local payload = {
         intraRP_API_Key = Config.EMDSync.APIKey,
         timestamp = os.time(),
@@ -345,7 +391,7 @@ local function SendMissionDataToPHP(missions)
     }
     
     for _, mission in ipairs(missions) do
-        table.insert(payload.missions, {
+        local missionData = {
             mission_number = mission.number,
             sender = mission.sender,
             start_time = mission.startTime,
@@ -355,7 +401,24 @@ local function SendMissionDataToPHP(missions)
             end_log_id = mission.endId,
             last_log_id = mission.lastLogId,
             logs = mission.logs
-        })
+        }
+        
+        -- Füge Dispatch-Daten hinzu, wenn vorhanden
+        local dispatchEntry = dispatchMap[mission.number]
+        if dispatchEntry then
+            missionData.dispatch_id = dispatchEntry.id
+            missionData.dispatch_data = dispatchEntry.dispatch
+            
+            if Config.Debug then
+                print("^2[Dispatch-Log-Sync]^7 Dispatch-Daten für Einsatz " .. mission.number .. " hinzugefügt (ID: " .. dispatchEntry.id .. ")")
+            end
+        else
+            if Config.Debug then
+                print("^3[Dispatch-Log-Sync]^7 Keine Dispatch-Daten für Einsatz " .. mission.number .. " gefunden")
+            end
+        end
+        
+        table.insert(payload.missions, missionData)
     end
     
     PerformHttpRequest(Config.EMDSync.PHPEndpoint, function(statusCode, response, headers)
