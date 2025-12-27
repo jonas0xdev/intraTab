@@ -1,3 +1,27 @@
+-- Funktion zum Ausführen von MySQL-Queries (nutzt vorhandene Framework-DB-Connection)
+local function ExecuteQuery(query, parameters)
+    local promise = promise.new()
+    
+    -- Versuche oxmysql (QBCore/ESX modern)
+    if GetResourceState('oxmysql') == 'started' then
+        exports.oxmysql:execute(query, parameters, function(result)
+            promise:resolve(result)
+        end)
+    -- Fallback auf mysql-async (ESX legacy)
+    elseif MySQL and MySQL.Async then
+        MySQL.Async.fetchAll(query, parameters, function(result)
+            promise:resolve(result)
+        end)
+    else
+        if Config.Debug then
+            print("^1[EMD-Sync]^7 Keine MySQL-Resource gefunden! Bitte oxmysql oder mysql-async installieren.")
+        end
+        promise:resolve(nil)
+    end
+    
+    return Citizen.Await(promise)
+end
+
 local function SendDataToPHP(data)
     if not Config.EMDSync or not Config.EMDSync.Enabled then
         return
@@ -59,6 +83,33 @@ local function GetDispatchData()
     return mannedVehicles
 end
 
+-- Funktion zum Abrufen von Dispatch-Details aus emd_dispatchlist
+local function GetDispatchListDetails(dispatchNumbers)
+    if not dispatchNumbers or #dispatchNumbers == 0 then
+        return {}
+    end
+    
+    -- Erstelle Platzhalter für die IN-Klausel
+    local placeholders = {}
+    for i = 1, #dispatchNumbers do
+        table.insert(placeholders, '?')
+    end
+    
+    local query = string.format([[
+        SELECT id, number, dispatch
+        FROM emd_dispatchlist
+        WHERE number IN (%s)
+    ]], table.concat(placeholders, ','))
+    
+    local result = ExecuteQuery(query, dispatchNumbers)
+    
+    if Config.Debug and result then
+        print("^2[EMD-Sync]^7 " .. #result .. " Dispatch-Details aus emd_dispatchlist gefunden")
+    end
+    
+    return result or {}
+end
+
 -- Haupt-Sync-Funktion
 function SyncDispatchData()
     if not Config.EMDSync or not Config.EMDSync.Enabled then
@@ -68,6 +119,47 @@ function SyncDispatchData()
     local dispatchData = GetDispatchData()
     
     if dispatchData and #dispatchData > 0 then
+        -- Sammle alle Einsatznummern
+        local dispatchNumbers = {}
+        local dispatchNumberSet = {}
+        
+        for _, vehicle in ipairs(dispatchData) do
+            if vehicle.dispatch and not dispatchNumberSet[vehicle.dispatch] then
+                table.insert(dispatchNumbers, vehicle.dispatch)
+                dispatchNumberSet[vehicle.dispatch] = true
+            end
+        end
+        
+        -- Hole Dispatch-Details aus emd_dispatchlist
+        local dispatchDetails = GetDispatchListDetails(dispatchNumbers)
+        
+        -- Erstelle Map für schnellen Zugriff
+        local dispatchMap = {}
+        for _, detail in ipairs(dispatchDetails) do
+            local dispatchJson = json.decode(detail.dispatch)
+            if dispatchJson then
+                dispatchMap[tostring(detail.number)] = {
+                    postal = dispatchJson.postal or "",
+                    dispatch_code = dispatchJson.dispatch_code or "",
+                    dispatch_issue = dispatchJson.dispatch_issue or "",
+                    issue = dispatchJson.issue or "",
+                    caller_phonenumber = dispatchJson.caller_phonenumber or "",
+                    caller_name = dispatchJson.caller_name or ""
+                }
+            end
+        end
+        
+        -- Füge Dispatch-Details zu jedem Fahrzeug hinzu
+        for _, vehicle in ipairs(dispatchData) do
+            if vehicle.dispatch and dispatchMap[tostring(vehicle.dispatch)] then
+                vehicle.dispatch_data = dispatchMap[tostring(vehicle.dispatch)]
+                
+                if Config.Debug then
+                    print("^2[EMD-Sync]^7 Dispatch-Daten für Einsatz " .. vehicle.dispatch .. " hinzugefügt")
+                end
+            end
+        end
+        
         local payload = {
             vehicles = dispatchData,
             serverName = GetConvar('sv_projectName', 'Unknown Server'),
@@ -190,30 +282,6 @@ end
 -- Tabelle zum Speichern bereits verarbeiteter Einsätze
 local processedMissions = {}
 local lastProcessedId = 0
-
--- Funktion zum Ausführen von MySQL-Queries (nutzt vorhandene Framework-DB-Connection)
-local function ExecuteQuery(query, parameters)
-    local promise = promise.new()
-    
-    -- Versuche oxmysql (QBCore/ESX modern)
-    if GetResourceState('oxmysql') == 'started' then
-        exports.oxmysql:execute(query, parameters, function(result)
-            promise:resolve(result)
-        end)
-    -- Fallback auf mysql-async (ESX legacy)
-    elseif MySQL and MySQL.Async then
-        MySQL.Async.fetchAll(query, parameters, function(result)
-            promise:resolve(result)
-        end)
-    else
-        if Config.Debug then
-            print("^1[EMD-Sync]^7 Keine MySQL-Resource gefunden! Bitte oxmysql oder mysql-async installieren.")
-        end
-        promise:resolve(nil)
-    end
-    
-    return Citizen.Await(promise)
-end
 
 -- Funktion zum Abrufen unverarbeiteter Dispatch-Logs
 local function GetUnprocessedLogs()
